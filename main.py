@@ -54,8 +54,11 @@ low: 軽微な改善・ドキュメント修正
 """
 
 @app.get("/health")
-async def health_check() -> dict[str,str]:
-    return{"status":"ok"}
+async def health_check() -> dict[str, str]:
+    return {
+        "status": "ok",
+        "service": "task-classification-api"
+    }
 
 @app.post(
     "/classify",
