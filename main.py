@@ -4,6 +4,7 @@ import json
 import httpx
 from fastapi import FastAPI,HTTPException
 from pydantic import BaseModel,Field
+from pydantic import BaseModel, Field, field_validator
 
 app = FastAPI(
     title="Task Classification API",
@@ -20,6 +21,13 @@ class TaskRequest(BaseModel):
     max_length=1000,
     description="分類対象のテキスト",
     )
+
+    @field_validator("text")
+    @classmethod
+    def validate_text(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("入力が空です")
+        return value
 
 class TaskResponse(BaseModel):
     category:str
