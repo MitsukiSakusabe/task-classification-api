@@ -133,6 +133,18 @@ async def classify_task(
             detail=f"Ollama returned HTTP {exc.response.status_code}."
         )from exc
 
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="Ollama returned invalid JSON."
+        ) from exc
+
+    except KeyError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Ollama response is missing required field: {exc.args[0]}."
+        ) from exc
+
     ##except Exception as exc:
         ##print(type(exc))
         ##print(exc)
