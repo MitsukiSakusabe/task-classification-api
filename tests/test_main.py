@@ -13,3 +13,25 @@ def test_health():
 
     assert data["status"] == "ok"
     assert data["service"] == "task-classification-api"
+
+def test_classify_bug():
+    response = client.post(
+        "/classify",
+        json={"text": "ログインボタンを押すとエラーになります"},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["category"] == "bug"
+    assert data["priority"] == "medium"
+    assert "reason" in data
+
+def test_classify_blank_text():
+    response = client.post(
+        "/classify",
+        json={"text": "　　"},
+    )
+
+    assert response.status_code == 422
