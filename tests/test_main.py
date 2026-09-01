@@ -35,3 +35,19 @@ def test_classify_blank_text():
     )
 
     assert response.status_code == 422
+
+def test_classify_too_long_text():
+    response = client.post(
+        "/classify",
+        json={"text": "a" * 1001},
+    )
+
+    assert response.status_code == 422
+
+def test_classify_min_length():
+    response = client.post(
+        "/classify",
+        json={"text": "a"},
+    )
+
+    assert response.status_code == 200
