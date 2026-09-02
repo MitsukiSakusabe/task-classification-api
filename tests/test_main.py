@@ -1,5 +1,10 @@
 from fastapi.testclient import TestClient
+from unittest.mock import patch
+
+import httpx
+
 from main import app
+
 
 client = TestClient(app)
 
@@ -13,6 +18,7 @@ def test_health():
 
     assert data["status"] == "ok"
     assert data["service"] == "task-classification-api"
+
 
 def test_classify_bug():
     response = client.post(
@@ -28,6 +34,7 @@ def test_classify_bug():
     assert data["priority"] == "medium"
     assert "reason" in data
 
+
 def test_classify_blank_text():
     response = client.post(
         "/classify",
@@ -35,6 +42,7 @@ def test_classify_blank_text():
     )
 
     assert response.status_code == 422
+
 
 def test_classify_too_long_text():
     response = client.post(
@@ -44,6 +52,7 @@ def test_classify_too_long_text():
 
     assert response.status_code == 422
 
+
 def test_classify_min_length():
     response = client.post(
         "/classify",
@@ -51,3 +60,16 @@ def test_classify_min_length():
     )
 
     assert response.status_code == 200
+
+
+def test_classify_ollama_unavailable():
+    with patch("main.httpx.AsyncClient.post") as mock_post:
+        mock_post.side_effect = httpx.ConnectError("connection failed")
+
+        response = client.post(
+            "/classify",
+            json={"text": "ログインできません"},
+        )
+
+        assert response.status_code == 503
+        assert response.json()["detail"] == "Ollama server is unavailable"
