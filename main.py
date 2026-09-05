@@ -47,16 +47,35 @@ other
 必ずJSONのみを返してください。
 
 {
-"category":"<category>"
+"category":"<category>",
 "priority":"<high|medium|low>",
 "reason":"<reason>"
 }
+
+categoryは次のルールで決めてください。
+
+bug: 既存の機能でエラーや不具合が発生している
+feature: 新しい機能や既存機能の追加・変更を求めている
+inquiry: 仕様や使い方について質問している
+documentation: マニュアルやドキュメントの修正・作成
+other: 上記のどれにも当てはまらない
+
+具体例：
+- 「ログインボタンを押すとエラーになる」→ bug
+- 「ログイン機能に二段階認証を追加したい」→ feature
+- 「パスワードを忘れた場合はどうすればいい？」→ inquiry
+- 「ログイン手順書を修正したい」→ documentation
 
 priorityは次のルールで決めてください。
 
 high: システム停止や重大な不具合
 medium: 通常の不具合・機能追加
 low: 軽微な改善・ドキュメント修正
+
+具体例：
+- 「システム全体が停止して誰もログインできない」→ high
+- 「ログインボタンを押すとエラーになる」→ medium
+- 「ボタンの色を変更したい」→ low
 
 説明文やMarkdown（```json）は付けないでください。
 """

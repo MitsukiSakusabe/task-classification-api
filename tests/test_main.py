@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from unittest.mock import patch
+from unittest.mock import Mock, AsyncMock, patch
 
 import httpx
 
@@ -54,12 +54,20 @@ def test_classify_too_long_text():
 
 
 def test_classify_min_length():
-    response = client.post(
-        "/classify",
-        json={"text": "a"},
-    )
+    mock_response = Mock()
+    mock_response.json.return_value = {
+        "response": '{"category":"bug","priority":"medium","reason":"test"}'
+    }
 
-    assert response.status_code == 200
+    with patch("main.httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
+        mock_post.return_value = mock_response
+
+        response = client.post(
+            "/classify",
+            json={"text": "a"},
+        )
+
+        assert response.status_code == 200
 
 
 def test_classify_ollama_unavailable():
