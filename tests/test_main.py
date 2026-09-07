@@ -81,3 +81,20 @@ def test_classify_ollama_unavailable():
 
         assert response.status_code == 503
         assert response.json()["detail"] == "Ollama server is unavailable"
+
+def test_classify_ollama_502():
+    mock_response = Mock()
+    mock_response.json.return_value = {
+        "response": '{"categroy" : "bug","priority":"medium","reason":"test"'
+    }
+
+    with patch("main.httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
+        mock_post.return_value = mock_response
+
+        response = client.post(
+            "/classify",
+            json={"text": "Jsonが不正です"},
+        )
+
+        assert response.status_code == 502
+        
