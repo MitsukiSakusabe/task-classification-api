@@ -97,4 +97,15 @@ def test_classify_ollama_502():
         )
 
         assert response.status_code == 502
+
+def test_classify_ollama_504():
+    with patch("main.httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
+        mock_post.side_effect = httpx.TimeoutException("request timed out")
+
+        response = client.post(
+            "/classify",
+            json={"text": "応答がありません"},
+        )
+
+        assert response.status_code == 504
         
