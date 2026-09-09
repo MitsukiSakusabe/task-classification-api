@@ -98,6 +98,26 @@ def test_classify_ollama_502():
 
         assert response.status_code == 502
 
+def test_classify_ollama_502_http_error():
+    error_response = Mock()
+    error_response.status_code = 500
+
+    error_request = Mock()
+
+    with patch("main.httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
+        mock_post.side_effect = httpx.HTTPStatusError(
+            "Internal Server Error",
+            request=error_request,
+            response=error_response,
+        )
+
+        response = client.post(
+            "/classify" ,
+            json = {"text" : "HTTPが異常です"},
+        )
+
+        assert response.status_code == 502
+
 def test_classify_ollama_504():
     with patch("main.httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
         mock_post.side_effect = httpx.TimeoutException("request timed out")
